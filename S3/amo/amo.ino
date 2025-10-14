@@ -15,6 +15,9 @@ const String brokerUser = "";
 const String brokerPass = "";
 
 void setup() {
+
+pinMode(2, OUTPUT);
+
   Serial.begin(115200);
   WiFi.begin(SSID, PASS);
   Serial.println("Conectando no WiFi");
@@ -45,7 +48,7 @@ void loop() {
 
     if (Serial.available() > 0) {
       mensagem = Serial.readStringUntil('\n');
-      mensagem = "Andre: " + mensagem;
+      mensagem = mensagem;
       mqtt.publish("brag", mensagem.c_str());
       Serial.println(mensagem);
     }
@@ -61,4 +64,9 @@ void callback(char* topic, byte* payload, unsigned long length) {
   }
   //Posso fazer o que quiser com a mensagem
   Serial.println(MensagemRecebida);
+if (MensagemRecebida == "Rafa: 1") {
+digitalWrite(2, HIGH);} 
+else if (MensagemRecebida == "Rafa: 2") {
+  digitalWrite(2, LOW);
+}
 }
