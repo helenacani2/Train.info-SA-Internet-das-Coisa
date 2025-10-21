@@ -62,3 +62,5 @@ void callback(char* topic, byte* payload, unsigned long length) {
   //Posso fazer o que quiser com a mensagem
   Serial.println(MensagemRecebida);
 }
+
+//
