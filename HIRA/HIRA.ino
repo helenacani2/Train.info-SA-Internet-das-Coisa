@@ -1,16 +1,10 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include "env.h"
 
 WiFiClient wifi_client;
 
 PubSubClient mqtt(wifi_client);
-
-const String SSID = "FIESC_IOT_EDU";
-const String PASS = "8120gv08";
-
-const String brokerURL = "test.mosquitto.org";
-const int brokerPort = 1883;
-const String topic = "deltarune";
 
 const String brokerUser = "";
 const String brokerPass = "";
@@ -19,7 +13,7 @@ void setup() {
 
   Serial.begin(115200);
   pinMode(2,OUTPUT);
-  WiFi.begin(SSID, PASS);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   Serial.println("Conectando no Wifi");
 
@@ -32,7 +26,7 @@ void setup() {
 
   Serial.println("Conectado com sucesso");
 
-  mqtt.setServer(brokerURL.c_str(),brokerPort);
+  mqtt.setServer(BROKER_URL.c_str(),BROKER_PORT);
 
   String clientID = "HIRA";
   clientID += String(random(0xffff),HEX);
@@ -46,7 +40,7 @@ void setup() {
 
   }
 
-  mqtt.subscribe(topic.c_str());
+  mqtt.subscribe(TOPIC_TREM.c_str());
 
   mqtt.setCallback(callback);
 
@@ -78,7 +72,7 @@ void loop() {
 
 
 
-void callback(char* topic, byte* payload, unsigned long length) {
+void callback(char* TOPIC_TREM, byte* payload, unsigned long length) {
 
   String MensagemRecebida = "";
 
