@@ -1,15 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include "env.h"
 
 WiFiClient wifi_client;
 PubSubClient mqtt(wifi_client);
-
-const String SSID = "FIESC_IOT_EDU";
-const String PASS = "8120gv08";
-
-const String brokerURL = "test.mosquitto.org"; //na SA vai diferente
-const int brokerPort = 1883; //na SA vai diferente
-const String topic = "undertale"; //topico onde vão estar as mensagens
 
 const String brokerUser = ""; //na SA vai ter, já que esse é publico e a SA não
 const String brokerPass = "";
@@ -19,7 +13,7 @@ void setup() {
 
     pinMode(2, OUTPUT);
 
-  WiFi.begin(SSID, PASS);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
   Serial.println("Conectando no WiFi");
   while(WiFi.status() != WL_CONNECTED){
     Serial.print(".");
@@ -28,7 +22,7 @@ void setup() {
 
   Serial.println("Conectado com sucesso!");
 
-  mqtt.setServer(brokerURL.c_str(),brokerPort); //isso aí cria um nome aleatório que aparece pra plaquinha, que é "S1-" + um código aleatório qualquer
+  mqtt.setServer(BROKER_URL, BROKER_PORT); //isso aí cria um nome aleatório que aparece pra plaquinha, que é "S1-" + um código aleatório qualquer
   String clientID = "S1-";
   clientID += String(random(0xffff),HEX);
   Serial.println("Conectando ao broker...");
@@ -36,7 +30,7 @@ void setup() {
     Serial.println(".");
     delay(200);
   }
-  mqtt.subscribe(topic.c_str()); //conectando a inscrição no tópico com outra placa de msm tópico
+  mqtt.subscribe(TOPIC_PRESENCE1); //conectando a inscrição no tópico com outra placa de msm tópico
   mqtt.setCallback(callback);
   Serial.println("\nConectado ao broker!");
 }
