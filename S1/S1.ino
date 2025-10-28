@@ -1,8 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <WifiClientSecure.h>
 #include "env.h"
 
-WiFiClient wifi_client;
+WiFiClientSecure wifi_client;
 PubSubClient mqtt(wifi_client);
 
 const String brokerUser = ""; //na SA vai ter, já que esse é publico e a SA não
@@ -10,6 +11,8 @@ const String brokerPass = "";
 
 void setup() {
   Serial.begin(115200);
+
+  wifi_client.setInsecure();
 
     pinMode(2, OUTPUT);
 
