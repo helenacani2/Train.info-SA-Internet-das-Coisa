@@ -1,7 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <WiFiClientSecure.h>
+#include "env.h"
 
-WiFiClient wifi_client;
+WiFiClientSecure wifi_client;
 PubSubClient mqtt(wifi_client);
 
 const String SSID = "FIESC_IOT_EDU";
@@ -15,6 +17,7 @@ const String brokerUser = "";
 const String brokerPass = "";
 
 void setup() {
+  wifi_client.setInsecure();
   Serial.begin(115200);
   WiFi.begin(SSID, PASS);
   Serial.println("Conectando no WiFi");
