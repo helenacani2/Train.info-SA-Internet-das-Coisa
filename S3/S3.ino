@@ -6,8 +6,8 @@
 WiFiClientSecure wifi_client;
 PubSubClient mqtt(wifi_client);
 
-const String SSID = "FIESC_IOT_EDU";
-const String PASS = "8120gv08";
+const String SSID = "";
+const String PASS = "";
 
 const String brokerURL = "test.mosquitto.org";
 const int brokerPort = 1883;
@@ -30,7 +30,7 @@ void setup() {
   String clientID = "S3-";
   clientID += String(random(0xffff), HEX);
   Serial.println("Conectando ao broker...");
-  while (mqtt.connect(clientID.c_str()) == 0) {
+  while(mqtt.connect(clientID.c_str(),BROKER_USR_ID,BROKER_PASS_USR_PASS) == 0) {
     Serial.print(".");
     delay(200);
   }
