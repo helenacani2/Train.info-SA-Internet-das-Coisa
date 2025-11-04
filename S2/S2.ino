@@ -1,8 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <inv.h>
+#include <env.h>
+#include <WiFiClientSecure.h>
 
-WiFiClient client;
+WiFiClientSecure client;
 PubSubClient mqtt(client);
 
 
@@ -15,6 +16,10 @@ const String brokerPass = "";
 
 void setup() {
   Serial.begin(115200);
+  wifi_client.serInsecure();
+
+pinMode(2, OUTPUT);
+
   WiFi.begin(WIFI_SSID, WIFI_PASS);
   Serial.println("conectando no WiFi");
   while(WiFi.status()!= WL_CONNECTED) {
