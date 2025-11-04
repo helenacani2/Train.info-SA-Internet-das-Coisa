@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <WifiClientSecure.h>
+#include <WiFiClientSecure.h>
 #include "env.h"
 
 WiFiClientSecure wifi_client;
@@ -29,31 +29,48 @@ void setup() {
   String clientID = "S1-";
   clientID += String(random(0xffff),HEX);
   Serial.println("Conectando ao broker...");
-  while(mqtt.connect(clientID.c_str()) == 0){
+  while (mqtt.connect (clientID.c_str () , BROKER_USR_ID, BROKER_USR_PASS) == 0 ){ //aqui o cod do iago
     Serial.println(".");
     delay(200);
   }
-  mqtt.subscribe(TOPIC_PRESENCE1); //conectando a inscrição no tópico com outra placa de msm tópico
+  mqtt.subscribe(TOPIC_PRESENCE_1); //conectando a inscrição no tópico com outra placa de msm tópico
+  mqtt.subscribe(TOPIC_UMID_1); //conectando a inscrição no tópico com outra placa de msm tópico
   mqtt.setCallback(callback);
   Serial.println("\nConectado ao broker!");
 }
 
+bool waitingForTemp = true; // Começa esperando a Temperatura
+
 void loop() {
+    String dadoLido = "";
 
-  String mensagem = "";
-  if(Serial.available() > 0){ //checagem na fila de mensagens
+    if(Serial.available() > 0){ // Checa se há uma nova linha
+        
+        dadoLido = Serial.readStringUntil('\n'); // Lê a entrada UMA ÚNICA VEZ
+        dadoLido.trim(); // Remove espaços em branco ou nova linha extra
 
-    mensagem = Serial.readStringUntil('\n');
-    mensagem = "Helena: " + mensagem;
-    mqtt.publish("deltarune", mensagem.c_str()); //aq vai o tópico, e a mensagem
-    Serial.println(mensagem);
+        if (waitingForTemp) {
+            // Está esperando a Temperatura
+            String mensagemTemp = "Helena (Temp): " + dadoLido;
+            mqtt.publish(TOPIC_TEMP_1, mensagemTemp.c_str()); 
+            Serial.println("Publicado em TEMP: " + mensagemTemp);
+            
+            // Inverte o estado para esperar o próximo dado (Umidade)
+            waitingForTemp = false; 
 
-  }
+        } else {
+            // Está esperando a Umidade
+            String mensagemUmidade = "Helena (Umidade): " + dadoLido;
+            mqtt.publish(TOPIC_UMID_1, mensagemUmidade.c_str()); 
+            Serial.println("Publicado em UMID: " + mensagemUmidade);
+            
+            // Inverte o estado para esperar o próximo dado (Temperatura)
+            waitingForTemp = true; 
+        }
+    }
 
-mqtt.loop();
-
+    mqtt.loop();
 }
-
 void callback(char * topic, byte* payload, unsigned long length) { //callback para a conexão de inscrição
 
   String MensagemRecebida = "";
