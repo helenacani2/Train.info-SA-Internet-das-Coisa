@@ -10,13 +10,25 @@ PubSubClient mqtt(wifi_client);
 const String brokerUser = "";
 const String brokerPass = "";
 
+const byte redPin = 19;
+const byte greenPin = 21;
+const byte bluePin = 18;
+
 void setup() {
 
   Serial.begin(115200);
+  pinMode(19,OUTPUT);
+  pinMode(21,OUTPUT);
+  pinMode(18,OUTPUT);
+
+  ledcAttach(redPin, 5000, 8);
+  ledcAttach(greenPin, 5000, 8);
+  ledcAttach(bluePin, 5000, 8);
 
   wifi_client.setInsecure();
+  
 
-  pinMode(2,OUTPUT);
+
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   Serial.println("Conectando no Wifi");
@@ -38,13 +50,13 @@ void setup() {
 
   Serial.println("Conectando ao Broker");
 
-  //while(mqtt.connect(clientID.c_str()) == 0) {
     while(mqtt.connect(clientID.c_str(),BROKER_USER_ID,BROKER_PASS_USR_PASS) == 0) {
       Serial.print(".");
       delay(200);
     }
 
-  mqtt.subscribe(TOPIC_TREM_LEDST);
+  //mqtt.subscribe("Train.info/S1/T");
+  mqtt.subscribe("Train.info/S3/LED");
   //mqtt.subscribe(TOPIC_TREM_LEDST.c_str());
 
   mqtt.setCallback(callback);
@@ -57,6 +69,7 @@ void setup() {
 
 void loop() {
 
+  
   //loop é onde os dados são lidos
 
   String mensagem = "";
@@ -79,7 +92,7 @@ void loop() {
 
 
 
-void callback(char* TOPIC_TREM, byte* payload, unsigned long length) {
+void callback(char* topic, byte* payload, unsigned long length) {
 
   //Callback é onde os dados são processaods
 
@@ -93,15 +106,19 @@ void callback(char* TOPIC_TREM, byte* payload, unsigned long length) {
 
   Serial.println(MensagemRecebida);
 
-  if(MensagemRecebida == "Helena: Acenda") {
+  if(MensagemRecebida == "1") {
 
-    digitalWrite(2, true);
+    ledcWrite(redPin, 255);
+    ledcWrite(greenPin, 0);
+    ledcWrite(bluePin, 0);
 
   }
 
-  if(MensagemRecebida == "Helena: Apague") {
+  if(MensagemRecebida == "0") {
 
-    digitalWrite(2, false);
+    ledcWrite(redPin, 0);
+    ledcWrite(greenPin, 0);
+    ledcWrite(bluePin, 0);
 
   }
 
