@@ -9,24 +9,20 @@ PubSubClient mqtt(wifi_client);
 const String SSID = "";
 const String PASS = "";
 
-const String brokerURL = "test.mosquitto.org";
-const int brokerPort = 1883;
-const String topic = "brag1";
-
 const String brokerUser = "";
 const String brokerPass = "";
 
 void setup() {
   wifi_client.setInsecure();
   Serial.begin(115200);
-  WiFi.begin(SSID, PASS);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
   Serial.println("Conectando no WiFi");
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(200);
   }
   Serial.println("Conectado com sucesso!");
-  mqtt.setServer(brokerURL.c_str(), brokerPort);
+  mqtt.setServer(BROKER_URL, BROKER_PORT);
   String clientID = "S3-";
   clientID += String(random(0xffff), HEX);
   Serial.println("Conectando ao broker...");
@@ -34,8 +30,8 @@ void setup() {
     Serial.print(".");
     delay(200);
   }
-  mqtt.subscribe(topic.c_str());
-  mqtt.setCallback(callback);
+  //mqtt.subscribe(topic.c_str());
+  //mqtt.setCallback(callback);
   Serial.println("\nConectado ao broker!");
 }
 String mensagem = "";
@@ -48,14 +44,13 @@ void loop() {
 
     if (Serial.available() > 0) {
       mensagem = Serial.readStringUntil('\n');
-      mensagem = "Andre: " + mensagem;
-      mqtt.publish("brag", mensagem.c_str());
+      mqtt.publish(TOPIC_LEDS_3, mensagem.c_str());
       Serial.println(mensagem);
     }
   }
     mqtt.loop();
 }
-
+/*
 void callback(char* topic, byte* payload, unsigned long length) {
   String MensagemRecebida = "";
   for (int i = 0; i < length; i++) {
@@ -66,4 +61,4 @@ void callback(char* topic, byte* payload, unsigned long length) {
   Serial.println(MensagemRecebida);
 }
 
-//
+*/
