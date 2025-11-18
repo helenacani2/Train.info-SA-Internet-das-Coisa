@@ -21,6 +21,25 @@ const String topic = "brag";
 const String brokerUser = "";
 const String brokerPass = "";
 
+//Pino dos sensores
+
+#define TRIGGER_PIN 22
+#define ECHO_PIN 23
+
+#define TRIGGER_PIN 18
+#define ECHO_PIN 19
+
+//Pino do led
+#define LED_PIN 12
+
+//Topicos de Presença
+#define TOPIC_PRESENCE_2
+#define TOPIC_PRESENCE_4
+#define TOPIC_LEDS_2
+#define TOPIC_LEDSTATUS_LEDS_2
+#define TOPIC_SERVO_3
+
+
 void setup() {
   Serial.begin(115200);
   client.setInsecure();
@@ -68,7 +87,7 @@ void loop() {
     Serial.println("A mensagem foi: ");
     Serial.println(mensagem);
     mensagem = "" + mensagem;
-    mqtt.publish(TOPIC_PRESENCE_2, mensagem.c_str());
+    mqtt.publish("TOPIC_PRESENCE_2", mensagem.c_str());
 
 
   }
