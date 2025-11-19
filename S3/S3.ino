@@ -14,7 +14,7 @@ Servo servo1;
 const byte SERVO1_PIN = 25;
 
 Servo servo2;
-const byte SERVO2_PIN = 24;
+const byte SERVO2_PIN = 33;
 
 #define ledPin 19
 
