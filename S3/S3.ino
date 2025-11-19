@@ -12,6 +12,7 @@ const byte ECHO_PIN = 14;
 
 Servo servo1;
 const byte SERVO1_PIN = 25;
+
 Servo servo2;
 const byte SERVO2_PIN = 24;
 
@@ -34,18 +35,17 @@ void setup() {
   while (mqtt.connect(clientID.c_str(), BROKER_USR_ID, BROKER_PASS_USR_PASS) == 0) {
     Serial.print(".");
     delay(200);
-
   }
-    // SÓ OS SUBSCRIBE: duas presenças rafael, presença do andré e iluminação helena
-    mqtt.subscribe(TOPIC_PRESENCE_2); //feito 
-    mqtt.subscribe(TOPIC_PRESENCE_4); //feito 
-    mqtt.subscribe(TOPIC_PRESENCE_3); //feito
-    mqtt.subscribe(TOPIC_LUMI_1);  //tópico de iluminação da placa 1 - feito
+  // SÓ OS SUBSCRIBE: duas presenças rafael, presença do andré e iluminação helena
+  mqtt.subscribe(TOPIC_PRESENCE_2);  //feito p1
+  mqtt.subscribe(TOPIC_PRESENCE_4);  //feito p2
+  mqtt.subscribe(TOPIC_PRESENCE_3);  //feito p3
+  mqtt.subscribe(TOPIC_LUMI_1);      //tópico de iluminação da placa 1 - feito
 
   mqtt.setCallback(callback);
   Serial.println("\nConectado ao broker!");
 
-  servo1.attach(SERVO1_PIN); //helena, lembre-se
+  servo1.attach(SERVO1_PIN);  //helena, lembre-se
   servo2.attach(SERVO2_PIN);
 
   pinMode(TRIGGER_PIN, OUTPUT);
@@ -58,16 +58,6 @@ String mensagem = "";
 //    Serial.print("A mensagem foi: ");
 //   Serial.println(mensagem);
 
-void loop() {
-  long distancia = lerDistancia();
-  if (distancia < 10) {
-    mqtt.publish(TOPIC_PRESENCE_3, "Presente");
-  } else {
-    mqtt.publish(TOPIC_PRESENCE_3, "Ausente");
-  }
-  mqtt.loop();
-  delay(500);
-}
 
 //função de ler distância:
 long lerDistancia() {
@@ -81,6 +71,17 @@ long lerDistancia() {
   long distancia = duracao * 349.24 / 2 / 10000;
 
   return distancia;
+}
+
+void loop() {
+  long distancia = lerDistancia();
+  if (distancia < 10) {
+    mqtt.publish(TOPIC_PRESENCE_3, "Presente");
+  } else {
+    mqtt.publish(TOPIC_PRESENCE_3, "Ausente");
+  }
+  mqtt.loop();
+  delay(500);
 }
 
 
@@ -98,9 +99,25 @@ void callback(char* topic, byte* payload, unsigned long length) {
     digitalWrite(ledPin, LOW);
     Serial.println("chegou aqui");
   }
-  repetir para presenca 1 2 3  servo.write(angulo);... 90 ou 120
-// else if (strcmp(topic, TOPIC_LUMI_1) == 0 && MensagemRecebida == "Claro") {
-    // digitalWrite(ledPin, LOW);
-    // Serial.println("chegou aqui");
-// }
+
+  if (strcmp(topic, TOPIC_PRESENCE_2) == 0 && MensagemRecebida == "Presente") {  //presença 1
+    servo1.write(90);
+
+  } else if (strcmp(topic, TOPIC_PRESENCE_3) == 0 && MensagemRecebida == "Presente") {  //presença 3
+    servo2.write(120);
+
+  } else if (strcmp(topic, TOPIC_PRESENCE_4) == 0 && MensagemRecebida == "Presente") {  //presença 2
+    servo1.write(120);
+    servo2.write(90);
+  }
+
+  //... 90 ou 120
+
+  /*if (strcmp(topic, TOPIC_PRESENCE_2) == 0 && MensagemRecebida == "Presente") {
+      repetir para presenca 1 2 3 servo.write(angulo);
+      ... 90 ou 120
+      // else if (strcmp(topic, TOPIC_LUMI_1) == 0 && MensagemRecebida == "Claro") {
+      // digitalWrite(ledPin, LOW);
+      // Serial.println("chegou aqui");
+      // */
 }
