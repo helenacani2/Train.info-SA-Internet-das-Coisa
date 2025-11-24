@@ -1,75 +1,60 @@
 #include <WiFi.h>
 #include <PubSubClient.h>  //Conecta as bibliotecas
 #include <WiFiClientSecure.h>
-#include "env.h"  //Conecta o env
+#include "env.h"  //Conecta o env (arquivo com as variáveis importantes que não podem ser publicadas)
 
 WiFiClientSecure wifi_client;
 
 PubSubClient mqtt(wifi_client);
 
-const String brokerUser = "";
-const String brokerPass = "";
-
 const byte redPin = 19;
 const byte greenPin = 21;
 const byte bluePin = 18;
-
-<<<<<<< HEAD
+                              //Declara as variáveis dos pinos dos LEDs
 const byte RedPinVel = 23;
 const byte GreenPinVel = 22;
 
-=======
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
 int status = 1;
+
 void setup() {
 
   Serial.begin(115200);
-  pinMode(19, OUTPUT);
-  pinMode(21, OUTPUT);
-  pinMode(18, OUTPUT);
-<<<<<<< HEAD
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
 
   pinMode(RedPinVel, OUTPUT);
   pinMode(GreenPinVel, OUTPUT);
-=======
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
 
   ledcAttach(redPin, 5000, 8);
-  ledcAttach(greenPin, 5000, 8);
+  ledcAttach(greenPin, 5000, 8);  //Configura o LED RGB
   ledcAttach(bluePin, 5000, 8);
-
 
   wifi_client.setInsecure();
 
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);  //Tenta conectar ao Wi-Fi
 
   Serial.println("Conectando no Wifi");
 
-  int ConectorWifi = 0;
+  int ConectorWifi = 0;  //Contador para detectar problemas de conexão do Wi-Fi
 
-<<<<<<< HEAD
-  while ((WiFi.status() != WL_CONNECTED) && (ConectorWifi != 100)) {
-
-    ledcWrite(redPin, 150);
-    ledcWrite(greenPin, 256);
-    ledcWrite(bluePin, 0);
-=======
   while((WiFi.status() != WL_CONNECTED) && (ConectorWifi != 100)) {
 
-    status = 10;
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
+    ledcWrite(redPin, 150);
+    ledcWrite(greenPin, 256);  //Altera a cor do LED RGB quando a placa tenta conectar ao Wi-Fi
+    ledcWrite(bluePin, 0);
 
     Serial.print(".");
     delay(200);
 
     ConectorWifi++;
-<<<<<<< HEAD
+
   }
 
-  if (ConectorWifi == 100) {
+  if (ConectorWifi >= 100) {
 
     ledcWrite(redPin, 255);
-    ledcWrite(greenPin, 0);
+    ledcWrite(greenPin, 0);  //Muda a cor do LED RGB para mostrar o erro de conexão
     ledcWrite(bluePin, 0);
 
     Serial.println("Erro ao conectar com o Wi-Fi");
@@ -77,44 +62,23 @@ void setup() {
   } else {
 
     Serial.println("Conectado ao Wi-Fi com sucesso");
+    
   }
 
-
-
-  mqtt.setServer(BROKER_URL, BROKER_PORT);
-=======
-
-  }
-
-  if(ConectorWifi == 100) {
-
-    status = 0;
-
-    Serial.println("Erro ao conectar com o Wi-Fi");
-
-  } else {
-
-    Serial.println("Conectado ao Wi-Fi com sucesso");
-
-  }
-
-
-
-  mqtt.setServer(BROKER_URL,BROKER_PORT);
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
+  
+  mqtt.setServer(BROKER_URL, BROKER_PORT);  //Tenta conectar ao Broker
 
   String clientID = "HIRA";
   clientID += String(random(0xffff), HEX);
 
   Serial.println("Conectando ao Broker");
 
-  int ConectorBroker = 0;
+  int ConectorBroker = 0;  //Contador para detectar problemas de conexão do Broker
 
-<<<<<<< HEAD
   while ((mqtt.connect(clientID.c_str(), BROKER_USER_ID, BROKER_PASS_USR_PASS) == 0) && (ConectorBroker != 100)) {
 
     ledcWrite(redPin, 150);
-    ledcWrite(greenPin, 0);
+    ledcWrite(greenPin, 0);  //Altera a cor do LED RGB quando a placa tenta conectar ao Broker
     ledcWrite(bluePin, 255);
 
     Serial.print(".");
@@ -122,10 +86,10 @@ void setup() {
     ConectorBroker++;
   }
 
-  if (ConectorBroker == 100) {
+  if (ConectorBroker >= 100) {
 
     ledcWrite(redPin, 255);
-    ledcWrite(greenPin, 0);
+    ledcWrite(greenPin, 0);  //Muda a cor do LED RGB para mostrar o erro de conexão
     ledcWrite(bluePin, 0);
 
     Serial.println("Erro ao conectar com o Broker");
@@ -136,41 +100,11 @@ void setup() {
   }
 
 
-  mqtt.subscribe(TOPIC_TREM_VELOCIDADE);
-
-
-  mqtt.setCallback(callback);
-=======
-    while((mqtt.connect(clientID.c_str(),BROKER_USER_ID,BROKER_PASS_USR_PASS) == 0) && (ConectorBroker != 100)) {
-
-      status = 20;
-      Serial.print(".");
-      delay(200);
-      ConectorBroker++;
-    }
-
-    if(ConectorBroker == 100) {
-
-    status = 0;
-
-    Serial.println("Erro ao conectar com o Broker");
-
-  } else {
-
-    Serial.println("\nConectado ao Broker com sucesso");
-
-  }
-
-
-  mqtt.subscribe("Train.info/S3/LED");
+  mqtt.subscribe(TOPIC_TREM_VELOCIDADE);  //Se inscreve no tópico de velocidade do trem
 
 
   mqtt.setCallback(callback);
 
-
-
-  
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
 }
 
 
@@ -184,41 +118,21 @@ void loop() {
 
   if (Serial.available() > 0) {
 
-    mensagem = Serial.readStringUntil('\n');
+    String mensagem = Serial.readStringUntil('\n');
 
-    Serial.println(mensagem);
-
-<<<<<<< HEAD
-    //status = atoi(mensagem);
-
-    mqtt.publish("TOPIC_TREM_LEDST", mensagem.c_str());
-  }
-
-
-=======
-  //status = atoi(mensagem);
+    Serial.println(mensagem);         //Mensagem escrita no Motor Serial e publicada no servidor (utilizada para testes)
 
     mqtt.publish("TOPIC_TREM_LEDST", mensagem.c_str());
 
-     
-
+    status = mensagem.toInt(); //Variável para alterar manualmente a cor do LED RGB (para testes)
+    
   }
 
-  
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
 
   mqtt.loop();
 
-  if (Serial.available() > 0) {
 
-    String mensagem = Serial.readStringUntil('\n');
-
-    Serial.println(mensagem);
-    status = mensagem.toInt();
-  }
-
-
-  switch (status) {
+  switch (status) {  //Altera a cor do LED RGB
 
     case 0:
 
@@ -230,11 +144,7 @@ void loop() {
     case 10:
 
       ledcWrite(redPin, 150);
-<<<<<<< HEAD
       ledcWrite(greenPin, 256);
-=======
-      ledcWrite(greenPin, 2556);
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
       ledcWrite(bluePin, 0);
       break;
 
@@ -261,31 +171,20 @@ void loop() {
 
     default:
 
-<<<<<<< HEAD
-      //for (byte i = 0; i < 4; i++) {
-
+      /*  //Essa parte tava dando problemas, vou tentar consertar na escola
       if ((status != 0) && (status != 1) && (status != 2) && (status != 10) && (status != 20)) {
-=======
-      for (byte i = 0; i < 4; i++) {
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
 
         ledcWrite(redPin, 0);
         ledcWrite(greenPin, 0);
         ledcWrite(bluePin, 255);
-<<<<<<< HEAD
+
         delay(500);
         ledcWrite(redPin, 0);
         ledcWrite(greenPin, 0);
         ledcWrite(bluePin, 0);
         delay(500);
-=======
-        delay(100);
-        ledcWrite(redPin, 0);
-        ledcWrite(greenPin, 0);
-        ledcWrite(bluePin, 0);
-        delay(100);
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
-      }
+
+      } */
   }
 }
 
@@ -298,16 +197,12 @@ void callback(char* topic, byte* payload, unsigned long length) {
   String MensagemRecebida = "";
 
   for (int i = 0; i < length; i++) {
-<<<<<<< HEAD
 
-    MensagemRecebida += (char)payload[i];
-=======
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
+    MensagemRecebida += (char)payload[i];  //Mensagem escrita no Motor Serial que simula a velocidade (utilizada para testes),
+                                           //mais tarde vai ser substituído pela variável do tópicp de velocidade
 
-    MensagemRecebida += (char)payload[i];
   }
 
-<<<<<<< HEAD
   int VelocidadeTrem = MensagemRecebida.toInt();
 
   if ((strcmp(topic, TOPIC_TREM_VELOCIDADE)) == 0 && VelocidadeTrem >= 0) {
@@ -315,13 +210,13 @@ void callback(char* topic, byte* payload, unsigned long length) {
     MensagemRecebida = "Velocidade positiva, igual a: " + MensagemRecebida + "km/h";
 
     digitalWrite(RedPinVel, false);
-    digitalWrite(GreenPinVel, true);
+    digitalWrite(GreenPinVel, true);  //LED verde pra mostrar que o trem está se movimentando para frente
 
   } else {
 
     MensagemRecebida = "Velocidade negativa, igual a: " + MensagemRecebida + "km/h";
 
-    digitalWrite(RedPinVel, true);
+    digitalWrite(RedPinVel, true);    //Led vermelho pra mostrar que o trem está se movimentando para trás
     digitalWrite(GreenPinVel, false);
 
   }
@@ -329,9 +224,4 @@ void callback(char* topic, byte* payload, unsigned long length) {
 
   Serial.println(MensagemRecebida);
 
-=======
-
-
-  Serial.println(MensagemRecebida);
->>>>>>> e56903d5ac3168b722bab7ad5c4c20d62227dea0
 }
