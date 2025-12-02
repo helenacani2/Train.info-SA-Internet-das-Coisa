@@ -171,7 +171,6 @@ void loop() {
 
     default:
 
-      /*  //Essa parte tava dando problemas, vou tentar consertar na escola
       if ((status != 0) && (status != 1) && (status != 2) && (status != 10) && (status != 20)) {
 
         ledcWrite(redPin, 0);
@@ -184,7 +183,7 @@ void loop() {
         ledcWrite(bluePin, 0);
         delay(500);
 
-      } */
+      }
   }
 }
 
