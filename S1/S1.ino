@@ -17,22 +17,15 @@ R: Ela recolhe dados dos sensores e envia eles via wifi pro broker
 - Como ela contribui para o funcionamento geral do projeto?
 R: Ela monitora o ambiente garantindo que é possível o pleno funcionamento da ferrovia e do sistema em si dentro dela. 
 
-- Tópicos MQTT utilizados?
-R: 
-  mqtt.subscribe(TOPIC_PRESENCE_1); //presença 
-  mqtt.subscribe(TOPIC_UMID_1); //umidade
-  mqtt.subscribe(TOPIC_TEMP_1); //temperatura
-  mqtt.subscribe(TOPIC_LUMI_1); //luminosidade
-
 - Quais tópicos a placa publica ou assina?
 R: Ela publica os tópicos de presença, umidade, temperatura e luminosidade, e está inscrita no de luminosidade também, controlando um led com os dados recolhidos pelo sensor.
 
 - Que tipo de informação é enviada/recebida em cada tópico?
 R: A presença verifica a distância, e em uma certa distância específica em centímetros (10) ele retorna se o trem está presente ou ausente. 
 Na temperatura, o sensor publica o valor da temperatura medido pelo sensor, com um dígito decimal de precisão (configurado)
-No tópico de luminosidade, se verifica a luz do ambiente medida pelo sensor, e em uma certa luminosidade específica, ele retorna se está claro ou escuro. Com isso, ele assina nesse mesmo tópico, e quando recebido “Escuro”, um led está programado para acender, e apagar quando recebido “Claro”.
 
-
+No tópico de luminosidade, se verifica a luz do ambiente medida pelo sensor, e em uma certa luminosidade específica, ele retorna se está claro ou escuro. 
+Com isso, ele assina nesse mesmo tópico, e quando recebido “Escuro”, um led está programado para acender, e apagar quando recebido “Claro”.
 
 // Mapeamento dos pinos do que serão usados do ESP32 para os sensores e atuadores
 4       / DHT
