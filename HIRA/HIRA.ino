@@ -38,7 +38,7 @@ void setup() {
 
   int ConectorWifi = 0;  //Contador para detectar problemas de conexão do Wi-Fi
 
-  while((WiFi.status() != WL_CONNECTED) && (ConectorWifi != 100)) {
+  while((WiFi.status() != WL_CONNECTED) && (ConectorWifi != 1000)) {
 
     ledcWrite(redPin, 150);
     ledcWrite(greenPin, 256);  //Altera a cor do LED RGB quando a placa tenta conectar ao Wi-Fi
@@ -51,7 +51,7 @@ void setup() {
 
   }
 
-  if (ConectorWifi >= 100) {
+  if (ConectorWifi >= 1000) {
 
     ledcWrite(redPin, 255);
     ledcWrite(greenPin, 0);  //Muda a cor do LED RGB para mostrar o erro de conexão
@@ -75,7 +75,7 @@ void setup() {
 
   int ConectorBroker = 0;  //Contador para detectar problemas de conexão do Broker
 
-  while ((mqtt.connect(clientID.c_str(), BROKER_USER_ID, BROKER_PASS_USR_PASS) == 0) && (ConectorBroker != 100)) {
+  while ((mqtt.connect(clientID.c_str(), BROKER_USER_ID, BROKER_PASS_USR_PASS) == 0) && (ConectorBroker != 1000)) {
 
     ledcWrite(redPin, 150);
     ledcWrite(greenPin, 0);  //Altera a cor do LED RGB quando a placa tenta conectar ao Broker
@@ -86,7 +86,7 @@ void setup() {
     ConectorBroker++;
   }
 
-  if (ConectorBroker >= 100) {
+  if (ConectorBroker >= 1000) {
 
     ledcWrite(redPin, 255);
     ledcWrite(greenPin, 0);  //Muda a cor do LED RGB para mostrar o erro de conexão
